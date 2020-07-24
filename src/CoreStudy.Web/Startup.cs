@@ -8,6 +8,7 @@ using AutoMapper;
 using CoreStudy.Data;
 using CoreStudy.Services.Categories;
 using CoreStudy.Services.Posts;
+using CoreStudy.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,7 @@ namespace CoreStudy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddControllersWithViews();
 
             var sqlConnectionString = Configuration.GetConnectionString("Connection");
 
@@ -67,12 +69,14 @@ namespace CoreStudy
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseRequestResponseLogging();
+
             app.UseSwagger();
             //启用中间件服务对swagger-ui，指定Swagger JSON终结点
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("v1/swagger.json", "Blog API"); 
-                c.RoutePrefix = "swagger";
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "Blog API"); 
+                c.RoutePrefix = "";
             });
 
             if (env.IsDevelopment())
