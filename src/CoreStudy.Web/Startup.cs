@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -64,6 +65,13 @@ namespace CoreStudy
             services.AddScoped<ICategoryService, CategoryService>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddSingleton<HttpClient>(i =>
+            {
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                return new HttpClient(handler);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +98,7 @@ namespace CoreStudy
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
             });
 
