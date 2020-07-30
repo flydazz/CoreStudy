@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreStudy.Core.Redis.Extensions;
 using CoreStudy.Data;
 using CoreStudy.Services.Categories;
 using CoreStudy.Services.Posts;
@@ -72,6 +73,8 @@ namespace CoreStudy
                 handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
                 return new HttpClient(handler);
             });
+
+            services.AddRedis();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
