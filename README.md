@@ -1,2 +1,2 @@
-## CoreStudy
+## .NET Core Study
 
