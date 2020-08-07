@@ -11,11 +11,13 @@ using CoreStudy.Core.Domain;
 using CoreStudy.Services.Categories;
 using CoreStudy.Services.Posts;
 using CoreStudy.Web.Models.Posts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace CoreStudy.Web.Controllers
 {
+    [Authorize]
     [Route("api/posts")]
     [ApiController]
     public class PostsController : ControllerBase
@@ -48,11 +50,6 @@ namespace CoreStudy.Web.Controllers
         [ProducesResponseType(typeof(List<PostModel>), 200)]
         public async Task<IActionResult> GetListAsync(int page = 1, int pageSize = 10)
         {
-            if (!Authorization())
-            {
-                return Unauthorized();
-            }
-
             var posts = await _postService.GetListAsync(page, pageSize);
 
             return Ok(_mapper.Map<List<PostModel>>(posts));
@@ -67,11 +64,6 @@ namespace CoreStudy.Web.Controllers
         [Route("{postId}", Name = "GetPostById")]
         public async Task<IActionResult> GetPostById([FromRoute] int postId)
         {
-            if (!Authorization())
-            {
-                return Unauthorized();
-            }
-
             var post = await _postService.GetByIdAsync(postId);
 
             if (post == null)
@@ -90,11 +82,6 @@ namespace CoreStudy.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] PostModel postModel)
         {
-            if (!Authorization())
-            {
-                return Unauthorized();
-            }
-
             var post = _mapper.Map<Post>(postModel);
 
             await _postService.PostAsync(post);
@@ -107,44 +94,44 @@ namespace CoreStudy.Web.Controllers
 
         #region 加密验证PrivateKey
 
-        private string GetPrivateKey()
-        {
-            return _configuration.GetValue<String>("PrivateKey");
-        }
+        //private string GetPrivateKey()
+        //{
+        //    return _configuration.GetValue<String>("PrivateKey");
+        //}
 
-        private string CreateMD5(string str)
-        {
+        //private string CreateMD5(string str)
+        //{
 
-            using (MD5 mi = MD5.Create())
-            {
-                byte[] buffer = Encoding.Default.GetBytes(str);
-                //开始加密
-                byte[] newBuffer = mi.ComputeHash(buffer);
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < newBuffer.Length; i++)
-                {
-                    sb.Append(newBuffer[i].ToString("x2"));
-                }
-                return sb.ToString();
-            }
+        //    using (MD5 mi = MD5.Create())
+        //    {
+        //        byte[] buffer = Encoding.Default.GetBytes(str);
+        //        //开始加密
+        //        byte[] newBuffer = mi.ComputeHash(buffer);
+        //        StringBuilder sb = new StringBuilder();
+        //        for (int i = 0; i < newBuffer.Length; i++)
+        //        {
+        //            sb.Append(newBuffer[i].ToString("x2"));
+        //        }
+        //        return sb.ToString();
+        //    }
 
-        }
+        //}
 
-        private bool Authorization()
-        {
-            string authorization = Request.Headers["Authorization"];
+        //private bool Authorization()
+        //{
+        //    string authorization = Request.Headers["Authorization"];
 
-            //var settings = new Settings();
-            //_configuration.GetSection("Settings").Bind(settings);
-            string privateKey = _configuration.GetValue<String>("PrivateKey");
+        //    //var settings = new Settings();
+        //    //_configuration.GetSection("Settings").Bind(settings);
+        //    string privateKey = _configuration.GetValue<String>("PrivateKey");
             
 
-            if (CreateMD5(privateKey)?.ToUpper() == authorization?.ToUpper())
-            {
-                return true;
-            }
-            return false;
-        }
+        //    if (CreateMD5(privateKey)?.ToUpper() == authorization?.ToUpper())
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
         #endregion
     }
 }
