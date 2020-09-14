@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
+using CoreStudy.Core.IdentityServer;
 using CoreStudy.Core.Redis.Extensions;
 using CoreStudy.Data;
 using CoreStudy.Services.Categories;
@@ -78,10 +79,13 @@ namespace CoreStudy
 
             services.AddRedis();
 
+            var identityServerUrl = IdentityServerUrlsConfigurationString.GetIdentityServerUrlsConfigurationString(Configuration);
+
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Authority = "http://localhost:5000";
+                    //options.Authority = "http://localhost:5000";
+                    options.Authority = identityServerUrl;
 
                     options.RequireHttpsMetadata = false;
 
@@ -90,6 +94,8 @@ namespace CoreStudy
                         ValidateAudience = false
                     };
                 });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,7 +107,7 @@ namespace CoreStudy
             //启用中间件服务对swagger-ui，指定Swagger JSON终结点
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("swagger/v1/swagger.json", "Blog API"); 
+                c.SwaggerEndpoint("swagger/v1/swagger.json", "Blog API");
                 c.RoutePrefix = "";
             });
 
@@ -112,7 +118,7 @@ namespace CoreStudy
 
             app.UseRouting();
 
-            //IdentityModelEventSource.ShowPII = true;
+            IdentityModelEventSource.ShowPII = true;
 
             app.UseAuthentication();
             app.UseAuthorization();
