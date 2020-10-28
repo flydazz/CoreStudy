@@ -41,6 +41,7 @@ namespace CoreStudy.Services.Posts
 
         public async Task<Post> PostAsync(Post post)
         {
+            //test
             post.CreateTime = DateTime.Now;
 
             _myContext.Posts.Add(post);
